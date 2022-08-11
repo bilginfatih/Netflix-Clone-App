@@ -12,6 +12,8 @@ struct Constants {
     
     static let API_KEY = "7853ff72a700bf6836329935b6c5b451"
     static let baseURL = "https://api.themoviedb.org"
+    static let YoutubeAPI_KEY = "AIzaSyB_8L6k1f0T1wHaV6oI5l3vH6WLRzRScGM"
+    static let YoutubeBaseURL = "https://youtube.googleapis.com/youtube/v3/search?"
 }
 
 enum APIError: Error {
@@ -163,6 +165,29 @@ class APICaller {
         task.resume()
     }
     
+    func getMovie(with query: String, completion: @escaping (Result<VideoElement, Error>) -> Void) {
+        
+        guard let query = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {return}
+        
+        guard let url = URL(string: "\(Constants.YoutubeBaseURL)q=\(query)&key=\(Constants.YoutubeAPI_KEY)") else {return}
+        
+        let task = URLSession.shared.dataTask(with: URLRequest(url: url)) { data, _, error in
+            
+            guard let data = data, error == nil else {return}
+            
+            do {
+                let results = try JSONDecoder().decode(YoutubeSearchResponse.self, from: data)
+                completion(.success(results.items[0]))
+            } catch {
+                completion(.failure(error))
+                print(error)
+            }
+            
+        }
+        task.resume()
+        
+    }
+    
 }
 
-// https://api.themoviedb.org/3/search/movie?api_key={api_key}&query=Jack+Reacher
+// https://youtube.googleapis.com/youtube/v3/search?q=test&key=[YOUR_API_KEY]
