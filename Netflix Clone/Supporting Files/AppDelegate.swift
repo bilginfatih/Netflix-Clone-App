@@ -30,32 +30,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
     
-    public var apiKey: String {
-      get {
-        // 1
+    private func getClientId(with q: String) -> String {
+        
         guard let filePath = Bundle.main.path(forResource: "keys", ofType: "plist") else {
           fatalError("Couldn't find file 'keys.plist'")
         }
         // 2
         let plist = NSDictionary(contentsOfFile: filePath)
-        guard let value = plist?.object(forKey: "TMDB_API") as? String else {
-          fatalError("Couldn't find key TMDB 'API_KEY' in 'keys.plist'")
+        guard let value = plist?.object(forKey: q) as? String else {
+          fatalError("Couldn't find key \(q) 'API_KEY' in 'keys.plist'")
         }
         return value
+    }
+    
+    public var TMDB_ApiKey: String {
+      get {
+          return getClientId(with: "TMDB_API")
       }
     }
-    public var apiKe: String {
+    
+    public var youtubeApiKey: String {
       get {
-        // 1
-        guard let filePath = Bundle.main.path(forResource: "keys", ofType: "plist") else {
-          fatalError("Couldn't find file 'keys.plist'")
-        }
-        // 2
-        let plist = NSDictionary(contentsOfFile: filePath)
-        guard let value = plist?.object(forKey: "YoutubeAPI") as? String else {
-          fatalError("Couldn't find key Youtube 'API_KEY' in 'keys.plist'")
-        }
-        return value
+        return getClientId(with: "YoutubeAPI")
       }
     }
 
